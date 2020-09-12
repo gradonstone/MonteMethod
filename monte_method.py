@@ -20,18 +20,17 @@ CHAIN_STEPS  = 10000                         # how many steps before terminate
 def plausibility_log(bigram_matrix, ciphertext, key_mapping):
     plausibility_product = 0
     for x in range(0, len(ciphertext) - 1):
-        s1 = ciphertext[x]
-        s2 = ciphertext[x + 1]
-
-        f_s1 = key_mapping[s1] # return character
-        f_s2 = key_mapping[s2] # return character
-
+        s1     = ciphertext[x]
+        s2     = ciphertext[x + 1]
+        f_s1   = key_mapping[s1] # return character
+        f_s2   = key_mapping[s2] # return character
         bigram = f_s1 + f_s2
         if (bigram in bigram_matrix):
             plausibility_product += bigram_matrix[bigram]
         else:
             print("Error! Bigram '{}'' not found in matrix".format(bigram))
     return plausibility_product
+
 
 def is_lower_char(ch):
     if (ord(ch) < ord('a') or ord(ch) > ord('z')):
@@ -47,20 +46,20 @@ def is_lower_char(ch):
 # .
 def get_bigram_matrix(file_name):
     bigram_matrix = {}
-    f = open(file_name)
-    line = f.readline()
+    f             = open(file_name)
+    line          = f.readline()
     while line:
-        line = line.strip()
+        line   = line.strip()
         bigram = line[:2]
-        freq = float(line[4:])
+        freq   = float(line[4:])
         bigram_matrix[bigram] = freq
-        line = f.readline()
+        line   = f.readline()
     return bigram_matrix
 
 # Returns array of all letters, ordered, from file_name
 def read_letters_from_file(file_name):
-    f1 = open(file_name, "r")
     letters_from_file = []
+    f1                = open(file_name, "r")
     while True:
         c1 = f1.read(1)
         if not c1:
@@ -73,11 +72,11 @@ def read_letters_from_file(file_name):
 # If you want a a custom key:mapping input from user
 def get_key_mapping():
     key_mapping = {}
-    input_str = input("Type map: ")
-    cur_letter = 'a'
+    input_str   = input("Type map: ")
+    cur_letter  = 'a'
     for x in input_str:
         key_mapping[x] = cur_letter
-        cur_letter = chr(ord(cur_letter) + 1)
+        cur_letter     = chr(ord(cur_letter) + 1)
     return key_mapping
 
 # Returns map of letter:letter of type:
@@ -85,10 +84,10 @@ def get_key_mapping():
 # TO DO: Error checking on str
 def assign_key_mapping(str):
     key_mapping = {}
-    cur_letter = 'a'
+    cur_letter  = 'a'
     for x in str:
         key_mapping[x] = cur_letter
-        cur_letter = chr(ord(cur_letter) + 1)
+        cur_letter     = chr(ord(cur_letter) + 1)
     return key_mapping
 
 # Transposes the key_mapping to a random new key
@@ -96,17 +95,15 @@ def assign_key_mapping(str):
 # Returns a new transposed map of letter:letter
 def transpose_key_mapping(key_mapping):
     transposed_map = key_mapping.copy()
-
-    rand1 = random.randint(0,25)
-    rand2 = random.randint(0,25)
-
+    rand1          = random.randint(0,25)
+    rand2          = random.randint(0,25)
+    # make sure values are unique
     while (rand1 == rand2):
         rand2 = random.randint(0,25)
+
     letter_ord_1 = ord('a') + rand1
     letter_ord_2 = ord('a') + rand2
-
-    temp_char = transposed_map[chr(letter_ord_1)]
-
+    temp_char    = transposed_map[chr(letter_ord_1)]
     transposed_map[chr(letter_ord_1)] = transposed_map[chr(letter_ord_2)]
     transposed_map[chr(letter_ord_2)] = temp_char
     return transposed_map
@@ -124,7 +121,7 @@ def flip_probability_coin(new_p, old_p):
 # Prints the contents of input_file after letter_mapping
 # transition applied to the screen
 def print_transposition(input_file, letter_mapping):
-    f = open(input_file, "r")
+    f  = open(input_file, "r")
     ch = f.read(1)
     while ch:
         if (is_lower_char(ch)):
@@ -134,14 +131,14 @@ def print_transposition(input_file, letter_mapping):
 
 def get_encryption_key_as_string(key_mapping):
     # switch keys and values
-    key_string = ""
+    key_string           = ""
     key_mapping_switched = {}
     for key, value in key_mapping.items():
         key_mapping_switched[value] = key
     ch = 'a'
     while (ord(ch) <= ord('z')):
         key_string += key_mapping_switched[ch]
-        ch = chr(ord(ch) + 1)
+        ch         = chr(ord(ch) + 1)
     return key_string
 
 def transpose_ciphertext_and_write_results_to_file(ciphertext_file, 
@@ -171,7 +168,7 @@ def monte_method(prelim_guess, bigram_file, ciphertext_file):
     # print_transposition(INPUT_FILE, key_mapping)
     # change to new key mapping 
     for i in range(0, CHAIN_STEPS):
-        new_mapping = transpose_key_mapping(key_mapping)
+        new_mapping      = transpose_key_mapping(key_mapping)
         new_plausibility = plausibility_log(bigram_matrix, file_letters, new_mapping)
         if (new_plausibility > plausibility):
             key_mapping  = new_mapping
@@ -198,6 +195,6 @@ if __name__ == "__main__":
         output_file = OUTPUT_FILE
 
     ciphertext_file = sys.argv[1]
-    key_mapping = monte_method(FIRST_GUESS, BIGRAM_FILE, ciphertext_file)
+    key_mapping     = monte_method(FIRST_GUESS, BIGRAM_FILE, ciphertext_file)
     transpose_ciphertext_and_write_results_to_file(ciphertext_file, key_mapping, output_file)
     print("Results outputed to {}".format(output_file))

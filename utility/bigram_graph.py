@@ -27,6 +27,4 @@ if __name__ == "__main__":
 
     ax.barh(labels, values)
     ax.invert_yaxis()
-
-    
     plt.show()

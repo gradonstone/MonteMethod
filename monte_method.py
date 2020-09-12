@@ -13,7 +13,6 @@ CHAIN_STEPS  = 10000                         # how many steps before terminate
 # key_mapping -> {'a': 't', ... , 'z':'b'}
 # bigram_matrix -> {'th': -8.67, ... }
 # Bigram matrix is dictionary of string:values from War and Peace novel. 
-# Transition_function is the arbitrary "key" we determined 
 # Returns the log(plausibility_product)
 # Remember log(a*b) = log(a) + log(b)
 # therefore, log(a*b* ... *z) = log(a) + log(b) + ... + log(z)
